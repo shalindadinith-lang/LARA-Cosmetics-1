@@ -186,18 +186,25 @@
 
                 if (!queryTitle) queryTitle = "Sri Lanka";
 
-                // 2. Fetch from Sinhala Wikipedia REST API
-                const wikiURL = `https://si.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryTitle)}`;
-                const wikiRes = await fetch(wikiURL);
+               
+                // 2. Fetch from English Wikipedia REST API
+const wikiURL = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryTitle)}`;
+const wikiRes = await fetch(wikiURL, {
+    headers: {
+        'User-Agent': 'SinhalaExplorer/1.0 (your.email@example.com)'  // Wikipedia එක recommend කරනවා User-Agent දාන්න
+    }
+});
 
-                if (!wikiRes.ok) {
-                    if (wikiRes.status === 404) {
-                        throw new Error("no-article");
-                    }
-                    throw new Error("fetch-failed");
-                }
+if (!wikiRes.ok) {
+    if (wikiRes.status === 404) {
+        throw new Error("no-article");
+    }
+    throw new Error("fetch-failed");
+}
 
-                const wikiData = await wikiRes.json();
+const wikiData = await wikiRes.json();
+
+// Render...
 
                 // Render beautiful panel
                 renderWikiData(wikiData, lat, lng);
