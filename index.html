@@ -1,488 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>LARA Cosmetics Shop</title>
-
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif;}
-  body{background:linear-gradient(120deg,#2a003f,#5e006e,#a1008c);color:white;overflow-x:hidden;}
-
-  header{
-    position:sticky;top:0;z-index:999;
-    padding:18px 6%;
-    background:rgba(0,0,0,0.6);
-    backdrop-filter:blur(10px);
-    display:flex;justify-content:space-between;align-items:center;
-    border-bottom:1px solid rgba(255,255,255,0.1);
-  }
-
-  .logo{
-    font-size:1.8rem;font-weight:800;
-    background:linear-gradient(90deg,#ff4fd8,#ffae00,#ff4fd8);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-
-  nav{display:flex;align-items:center;gap:20px;}
-  nav a{text-decoration:none;color:#ffd6f4;font-weight:500;transition:.3s;}
-  nav a:hover{color:#ff4fd8;}
-
-  .cart-btn{
-    background:#ff4fd8;border:none;
-    padding:10px 18px;border-radius:30px;
-    cursor:pointer;font-weight:700;color:black;
-    transition:.3s;
-  }
-  .cart-btn:hover{transform:scale(1.05);box-shadow:0 0 18px rgba(255,79,216,0.6);}
-
-  .hero{padding:70px 6%;text-align:center;}
-  .hero h1{
-    font-size:clamp(2.8rem,8vw,5rem);
-    font-weight:900;
-    background:linear-gradient(90deg,#fff,#ff4fd8,#ffae00,#fff);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .hero p{margin-top:15px;font-size:1.2rem;opacity:.85;}
-
-  .search-box{
-    margin:40px auto 0;max-width:650px;
-    display:flex;gap:10px;justify-content:center;align-items:center;
-  }
-  .search-box input,.search-box select{
-    padding:12px 15px;border-radius:10px;border:none;outline:none;
-    font-size:1rem;width:100%;
-  }
-  .search-box select{width:220px;cursor:pointer;}
-
-  .products{padding:40px 6% 80px;}
-  .products h2{text-align:center;font-size:2.5rem;margin-bottom:30px;color:#ffae00;}
-
-  .product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;}
-
-  .card{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:18px;
-    padding:18px;
-    transition:.3s;
-    backdrop-filter:blur(12px);
-  }
-  .card:hover{
-    transform:translateY(-10px);
-    border-color:rgba(255,79,216,0.6);
-    box-shadow:0 0 25px rgba(255,79,216,0.2);
-  }
-  .card img{width:100%;height:220px;object-fit:cover;border-radius:15px;}
-  .card h3{margin-top:12px;font-size:1.2rem;color:#ffd6f4;}
-  .card p{margin-top:6px;font-size:1rem;opacity:.9;}
-  .price{margin-top:10px;font-size:1.2rem;font-weight:800;color:#ffae00;}
-
-  .btn{
-    margin-top:14px;width:100%;
-    padding:12px;border:none;border-radius:12px;
-    cursor:pointer;font-size:1rem;font-weight:700;
-    background:linear-gradient(90deg,#ff4fd8,#ffae00);
-    color:black;transition:.3s;
-  }
-  .btn:hover{transform:scale(1.03);box-shadow:0 0 18px rgba(255,174,0,0.4);}
-
-  /* CART */
-  .cart-sidebar{
-    position:fixed;top:0;right:-450px;width:400px;height:100%;
-    background:rgba(0,0,0,0.9);
-    backdrop-filter:blur(15px);
-    padding:20px;
-    transition:.4s;
-    z-index:9999;
-    border-left:1px solid rgba(255,255,255,0.1);
-    overflow-y:auto;
-  }
-  .cart-sidebar.active{right:0;}
-
-  .cart-header{display:flex;justify-content:space-between;align-items:center;}
-  .cart-header h2{font-size:1.6rem;color:#ffae00;}
-  .close-btn{cursor:pointer;font-size:1.8rem;font-weight:800;color:#ff4fd8;}
-
-  .cart-items{margin-top:20px;}
-  .cart-item{
-    background:rgba(255,255,255,0.06);
-    padding:12px;border-radius:12px;margin-bottom:15px;
-    border:1px solid rgba(255,255,255,0.08);
-  }
-  .cart-item h4{font-size:1rem;color:#ffd6f4;}
-  .cart-item p{font-size:.95rem;opacity:.85;margin-top:5px;}
-
-  .cart-controls{margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:5px;}
-
-  .qty-btn{
-    background:#ff4fd8;border:none;padding:6px 10px;border-radius:8px;
-    cursor:pointer;font-weight:800;color:black;
-  }
-  .remove-btn{
-    background:#ffae00;border:none;padding:6px 10px;border-radius:8px;
-    cursor:pointer;font-weight:800;color:black;
-  }
-
-  .total-box{
-    margin-top:20px;padding:15px;border-radius:12px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);
-  }
-  .total-box h3{font-size:1.3rem;color:#ffae00;}
-
-  /* CHECKOUT */
-  .checkout{
-    margin-top:20px;padding:15px;border-radius:12px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);
-  }
-  .checkout h3{color:#ff4fd8;margin-bottom:10px;}
-  .checkout input,.checkout textarea{
-    width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none;outline:none;
-  }
-  .checkout textarea{height:80px;resize:none;}
-
-  .order-btn{
-    margin-top:15px;width:100%;
-    padding:12px;border:none;border-radius:12px;
-    cursor:pointer;font-size:1.05rem;font-weight:800;
-    background:linear-gradient(90deg,#ffae00,#ff4fd8);
-    color:black;
-  }
-  .order-btn:hover{box-shadow:0 0 20px rgba(255,79,216,0.4);transform:scale(1.02);}
-
-  footer{padding:25px;text-align:center;opacity:.6;font-size:.95rem;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinhala Explorer • Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Sans+SC&amp;display=swap');
+        
+        :root {
+            --map-height: 100vh;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+        }
+        
+        /* Glassmorphism panel */
+        #side-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(24px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: -20px 0 30px -10px rgb(0 0 0 / 0.4);
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tail-text {
+            font-family: 'Noto Sans SC', system_ui, sans-serif;
+        }
+        
+        /* Spinner */
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 4px solid rgba(163, 163, 163, 0.2);
+            border-top-color: #22c55e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .wiki-extract {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            max-height: 420px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        
+        .wiki-extract::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .wiki-extract::-webkit-scrollbar-thumb {
+            background: rgba(163, 163, 163, 0.3);
+            border-radius: 20px;
+        }
+    </style>
 </head>
+<body class="bg-zinc-950 text-white overflow-hidden">
+    <!-- Map Container -->
+    <div id="map" class="absolute inset-0 z-0"></div>
 
-<body>
-
-<header>
-  <div class="logo">LARA Cosmetics</div>
-  <nav>
-    <a href="#products">Shop</a>
-    <a href="#about">About</a>
-    <button class="cart-btn" onclick="toggleCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
-  </nav>
-</header>
-
-<section class="hero">
-  <h1>Beauty That Shines ✨</h1>
-  <p>Cosmetics Collection | Lipsticks | Skincare | Perfumes | Makeup Kits</p>
-
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search products..." onkeyup="renderProducts()">
-    <select id="categoryFilter" onchange="renderProducts()">
-      <option value="all">All Categories</option>
-      <option value="Skincare">Skincare</option>
-      <option value="Makeup">Makeup</option>
-      <option value="Perfume">Perfume</option>
-      <option value="Accessories">Accessories</option>
-    </select>
-  </div>
-</section>
-
-<section class="products" id="products">
-  <h2>Our Products 💄</h2>
-  <div class="product-grid" id="productGrid"></div>
-</section>
-
-<section class="hero" id="about">
-  <h1 style="font-size:2.5rem;">About Us</h1>
-  <p style="max-width:850px;margin:15px auto;line-height:1.8;">
-    Welcome to <b>LARA Cosmetics</b>. We provide quality beauty products at affordable prices.
-    Place your order now and it will be sent directly to our email.
-  </p>
-</section>
-
-<footer>
-   LARA Cosmetics. All Rights Reserved.
-</footer>
-
-<!-- CART SIDEBAR -->
-<div class="cart-sidebar" id="cartSidebar">
-  <div class="cart-header">
-    <h2>Your Cart 🛍️</h2>
-    <span class="close-btn" onclick="toggleCart()">✖</span>
-  </div>
-
-  <div class="cart-items" id="cartItems"></div>
-
-  <div class="total-box">
-    <h3>Total: Rs. <span id="cartTotal">0</span></h3>
-  </div>
-
-  <div class="checkout">
-    <h3>Checkout Details</h3>
-    <input type="text" id="customerName" placeholder="Your Name">
-    <input type="text" id="customerPhone" placeholder="Phone Number">
-    <input type="email" id="customerEmail" placeholder="Customer Email (optional)">
-    <textarea id="customerAddress" placeholder="Delivery Address"></textarea>
-    <button class="order-btn" id="orderBtn" onclick="placeOrder()">📩 Place Order</button>
-<p id="orderMessage" style="margin-top:8px;font-size:0.9rem;opacity:0.8;"></p>
-
-  </div>
-</div>
-
-
-<!-- EMAILJS SCRIPT -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-<script>
-/* =============================
-   EMAILJS CONFIG (CHANGE HERE)
-============================= */
-emailjs.init("W_o_RiuSlVn_zCxlp"); // <-- Paste your EmailJS Public Key here
-
-
-/* ===========================
-   PRODUCT DATA (EDIT HERE)
-=========================== */
-let products = [];
-
-// page load වෙනකොට localStorage එකෙන් ගන්න
-function loadProducts() {
-    const savedProducts = localStorage.getItem("shewa_products");
-    if (savedProducts) {
-        products = JSON.parse(savedProducts);
-    } else {
-        // එකම default products තියාගන්න ඕන නම් මෙතන දාන්න
-        products = [
-            { id: 1, name: "Glow Face Cream", price: 2500, category: "Skincare", image: "..." },
-            // අනිත් default ටික
-        ];
-        saveProducts(); // පළවෙනි පාරට save කරගන්න
-    }
-    renderProducts();
-}
-
-function saveProducts() {
-    localStorage.setItem("shewa_products", JSON.stringify(products));
-}
-
-// page ආරම්භ වෙනකොට call කරන්න
-loadProducts();
-
-
-
-/* ===========================
-   CART SYSTEM
-=========================== */
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-function saveCart(){
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-function toggleCart(){
-  document.getElementById("cartSidebar").classList.toggle("active");
-  renderCart();
-}
-
-function addToCart(productId){
-  const item = cart.find(p => p.id === productId);
-
-  if(item){
-    item.qty += 1;
-  } else {
-    cart.push({ id: productId, qty: 1 });
-  }
-
-  saveCart();
-  renderCart();
-  updateCartCount();
-}
-
-function removeFromCart(productId){
-  cart = cart.filter(p => p.id !== productId);
-  saveCart();
-  renderCart();
-  updateCartCount();
-}
-
-function changeQty(productId, amount){
-  const item = cart.find(p => p.id === productId);
-  if(!item) return;
-
-  item.qty += amount;
-
-  if(item.qty <= 0){
-    removeFromCart(productId);
-  }
-
-  saveCart();
-  renderCart();
-  updateCartCount();
-}
-
-function updateCartCount(){
-  const totalQty = cart.reduce((sum,item)=>sum+item.qty,0);
-  document.getElementById("cartCount").innerText = totalQty;
-}
-
-
-/* ===========================
-   RENDER PRODUCTS
-=========================== */
-function renderProducts(){
-  const grid = document.getElementById("productGrid");
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const category = document.getElementById("categoryFilter").value;
-
-  grid.innerHTML = "";
-
-  const filtered = products.filter(p => {
-    const matchSearch = p.name.toLowerCase().includes(search);
-    const matchCategory = category === "all" ? true : p.category === category;
-    return matchSearch && matchCategory;
-  });
-
-  if(filtered.length === 0){
-    grid.innerHTML = "<p style='text-align:center;opacity:0.7;font-size:1.2rem;'>No products found 😢</p>";
-    return;
-  }
-
-  filtered.forEach(p => {
-    grid.innerHTML += `
-      <div class="card">
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>Category: ${p.category}</p>
-        <div class="price">Rs. ${p.price}</div>
-        <button class="btn" onclick="addToCart(${p.id})">➕ Add to Cart</button>
-      </div>
-    `;
-  });
-}
-
-
-/* ===========================
-   RENDER CART
-=========================== */
-function renderCart(){
-  const cartItemsBox = document.getElementById("cartItems");
-  const cartTotalBox = document.getElementById("cartTotal");
-
-  cartItemsBox.innerHTML = "";
-
-  if(cart.length === 0){
-    cartItemsBox.innerHTML = "<p style='opacity:0.7;text-align:center;margin-top:20px;'>Cart is empty 🛒</p>";
-    cartTotalBox.innerText = "0";
-    return;
-  }
-
-  let total = 0;
-
-  cart.forEach(item => {
-    const product = products.find(p => p.id === item.id);
-    const subTotal = product.price * item.qty;
-    total += subTotal;
-
-    cartItemsBox.innerHTML += `
-      <div class="cart-item">
-        <h4>${product.name}</h4>
-        <p>Rs. ${product.price} × ${item.qty} = <b>Rs. ${subTotal}</b></p>
-
-        <div class="cart-controls">
-          <button class="qty-btn" onclick="changeQty(${item.id}, -1)">➖</button>
-          <button class="qty-btn" onclick="changeQty(${item.id}, 1)">➕</button>
-          <button class="remove-btn" onclick="removeFromCart(${item.id})">🗑 Remove</button>
+    <!-- Side History Panel -->
+    <div id="side-panel" 
+         class="fixed top-0 right-0 bottom-0 w-full md:w-96 translate-x-full flex flex-col z-50 rounded-l-3xl overflow-hidden">
+        
+        <!-- Panel Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-black/30">
+            <div class="flex items-center gap-x-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-xl">📍</div>
+                <div>
+                    <span class="text-emerald-400 text-sm font-medium tracking-widest">SINHALA WIKIPEDIA</span>
+                    <h2 class="text-xl font-semibold">Place History</h2>
+                </div>
+            </div>
+            <button onclick="hidePanel()" 
+                    class="w-9 h-9 flex items-center justify-center hover:bg-white/10 rounded-2xl transition-colors text-2xl leading-none">
+                ×
+            </button>
         </div>
-      </div>
-    `;
-  });
 
-  cartTotalBox.innerText = total;
-}
+        <!-- Panel Content -->
+        <div id="panel-content" class="flex-1 p-6 overflow-y-auto">
+            <!-- Filled by JavaScript -->
+        </div>
 
+        <!-- Footer hint -->
+        <div class="px-6 py-4 text-xs text-zinc-500 border-t border-white/10 text-center">
+            Click anywhere on the map to explore
+        </div>
+    </div>
 
-/* ===========================
-   PLACE ORDER (EMAILJS AUTO SEND)
-=========================== */
-function placeOrder(){
+    <!-- Floating instruction (hidden after first click) -->
+    <div id="instruction" 
+         class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-zinc-900/90 text-zinc-400 text-sm px-6 py-3 rounded-3xl flex items-center gap-x-3 shadow-2xl z-40 backdrop-blur-xl border border-white/10 transition-opacity">
+        <span class="text-emerald-400">👆</span>
+        <span>Click any location on the map</span>
+    </div>
 
-  const messageBox = document.getElementById("orderMessage");
-  const orderBtn = document.getElementById("orderBtn");
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Tailwind script already loaded via CDN
+        
+        let map;
+        let currentMarker = null;
+        let panelOpen = false;
+        let firstClick = true;
 
-  if(cart.length === 0){
-    alert("Your cart is empty!");
-    return;
-  }
+        // Initialize Leaflet map centered on Sri Lanka
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: true,
+                attributionControl: true
+            }).setView([7.8731, 80.7718], 8); // Sri Lanka center
 
-  const name = document.getElementById("customerName").value.trim();
-  const phone = document.getElementById("customerPhone").value.trim();
-  const email = document.getElementById("customerEmail").value.trim();
-  const address = document.getElementById("customerAddress").value.trim();
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                className: 'map-tiles'
+            }).addTo(map);
 
-  if(!name || !phone || !address){
-    alert("Please fill Name, Phone, and Address!");
-    return;
-  }
+            // Click handler
+            map.on('click', handleMapClick);
+        }
 
-  // 🔄 Show loading message
-  messageBox.innerHTML = "⏳ Please wait... Confirming your order";
-  messageBox.style.color = "#ffae00";
-  orderBtn.disabled = true;
+        // Main click handler
+        async function handleMapClick(e) {
+            const { lat, lng } = e.latlng;
 
-  let orderText = "";
-  let total = 0;
+            // Add marker
+            if (currentMarker) map.removeLayer(currentMarker);
+            currentMarker = L.marker([lat, lng], {
+                riseOnHover: true
+            }).addTo(map);
 
-  cart.forEach(item => {
-    const product = products.find(p => p.id === item.id);
-    const sub = product.price * item.qty;
-    total += sub;
-    orderText += `• ${product.name} (Rs.${product.price}) x ${item.qty} = Rs.${sub}\n`;
-  });
+            // Show panel
+            showPanel();
 
-  const templateParams = {
-    customer_name: name,
-    customer_phone: phone,
-    customer_email: email || "Not Provided",
-    customer_address: address,
-    order_items: orderText,
-    total_price: total
-  };
+            // Show loading state
+            showLoading();
 
-  emailjs.send("service_jole3ot", "template_n8pbmd8", templateParams)
+            // Hide instruction after first click
+            if (firstClick) {
+                document.getElementById('instruction').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('instruction').style.display = 'none';
+                }, 800);
+                firstClick = false;
+            }
 
-    .then(() => {
+            try {
+                // 1. Reverse geocoding with Nominatim (OpenStreetMap)
+                const nominatimURL = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+                const nomRes = await fetch(nominatimURL);
+                const nomData = await nomRes.json();
 
-      messageBox.innerHTML = "✅ Order Confirmed Successfully!";
-      messageBox.style.color = "#00ff99";
+                // Get best possible place name for Wikipedia lookup
+                const address = nomData.address || {};
+                let queryTitle = address.city ||
+                                 address.town ||
+                                 address.village ||
+                                 address.hamlet ||
+                                 address.suburb ||
+                                 address.state_district ||
+                                 nomData.display_name.split(',')[0].trim();
 
-      cart = [];
-      localStorage.removeItem("cart");
-      renderCart();
-      updateCartCount();
+                if (!queryTitle) queryTitle = "Sri Lanka";
 
-      document.getElementById("customerName").value = "";
-      document.getElementById("customerPhone").value = "";
-      document.getElementById("customerEmail").value = "";
-      document.getElementById("customerAddress").value = "";
+                // 2. Fetch from Sinhala Wikipedia REST API
+                const wikiURL = `https://si.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryTitle)}`;
+                const wikiRes = await fetch(wikiURL);
 
-      orderBtn.disabled = false;
+                if (!wikiRes.ok) {
+                    if (wikiRes.status === 404) {
+                        throw new Error("no-article");
+                    }
+                    throw new Error("fetch-failed");
+                }
 
-    })
-    .catch((error) => {
+                const wikiData = await wikiRes.json();
 
-      messageBox.innerHTML = "❌ Order Failed! Please try again.";
-      messageBox.style.color = "red";
+                // Render beautiful panel
+                renderWikiData(wikiData, lat, lng);
 
-      orderBtn.disabled = false;
+            } catch (error) {
+                console.error(error);
+                let message = "Something went wrong.";
+                
+                if (error.message === "no-article") {
+                    message = "No Sinhala Wikipedia article found for this location.<br>Try clicking near a major city or town.";
+                } else {
+                    message = "Could not fetch Wikipedia data at this time.";
+                }
+                
+                showError(message);
+            }
+        }
 
-      console.log("EmailJS Error:", error);
-    });
-}
+        function showLoading() {
+            const content = document.getElementById('panel-content');
+            content.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full py-20">
+                    <div class="spinner mx-auto mb-6"></div>
+                    <p class="text-zinc-400 text-sm tracking-widest">LOADING FROM SINHALA WIKIPEDIA...</p>
+                </div>
+            `;
+        }
 
+        function renderWikiData(data, lat, lng) {
+            const content = document.getElementById('panel-content');
+            
+            const title = data.displaytitle || data.title;
+            const summary = data.extract || "No description available in Sinhala Wikipedia.";
+            const thumbnail = data.thumbnail ? data.thumbnail.source : null;
+            const pageURL = `https://si.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
 
-/* INIT */
-renderProducts();
-renderCart();
-updateCartCount();
-</script>
+            let html = `
+                <div class="glass-card rounded-3xl p-6 mb-6">
+                    <h1 class="text-3xl font-bold leading-tight tail-text mb-4">${title}</h1>
+                    
+                    <!-- Coordinates -->
+                    <div class="flex items-center gap-x-2 text-xs text-emerald-400 mb-6">
+                        <span>📍</span>
+                        <span>${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E</span>
+                    </div>
+            `;
 
+            // Thumbnail
+            if (thumbnail) {
+                html += `
+                    <div class="rounded-2xl overflow-hidden mb-6 shadow-inner">
+                        <img src="${thumbnail}" 
+                             alt="${title}"
+                             class="w-full h-auto object-cover">
+                    </div>
+                `;
+            }
+
+            html += `
+                    <!-- Summary -->
+                    <div class="wiki-extract text-zinc-200 pr-2">
+                        ${summary}
+                    </div>
+                </div>
+
+                <!-- Read More Button -->
+                <a href="${pageURL}" 
+                   target="_blank"
+                   class="block w-full bg-white text-zinc-900 hover:bg-emerald-400 hover:text-white transition-all font-semibold py-4 rounded-3xl text-center text-lg shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-x-2">
+                    <span>Read Full Article</span>
+                    <span class="text-xl">→</span>
+                </a>
+
+                <p class="text-center text-[10px] text-zinc-500 mt-8">
+                    Powered by si.wikipedia.org REST API
+                </p>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        function showError(msg) {
+            const content = document.getElementById('panel-content');
+            content.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full py-12 text-center">
+                    <div class="w-16 h-16 bg-red-500/10 rounded-3xl flex items-center justify-center mb-6 text-4xl">⚠️</div>
+                    <p class="text-red-300 text-xl font-medium mb-3">No data found</p>
+                    <p class="text-zinc-400 max-w-[260px]">${msg}</p>
+                    
+                    <button onclick="hidePanel()" 
+                            class="mt-10 px-8 py-3 text-sm border border-white/30 hover:border-white/60 rounded-3xl transition-colors">
+                        CLOSE PANEL
+                    </button>
+                </div>
+            `;
+        }
+
+        function showPanel() {
+            const panel = document.getElementById('side-panel');
+            panel.style.transform = 'translateX(0)';
+            panelOpen = true;
+        }
+
+        function hidePanel() {
+            const panel = document.getElementById('side-panel');
+            panel.style.transform = 'translateX(100%)';
+            panelOpen = false;
+            
+            // Optional: remove marker after closing
+            // setTimeout(() => {
+            //     if (currentMarker) map.removeLayer(currentMarker);
+            //     currentMarker = null;
+            // }, 600);
+        }
+
+        // Keyboard escape support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && panelOpen) {
+                hidePanel();
+            }
+        });
+
+        // Initialize everything
+        window.onload = function() {
+            // Tailwind ready
+            initMap();
+            
+            // Show initial instruction
+            setTimeout(() => {
+                const instr = document.getElementById('instruction');
+                instr.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
+            }, 1200);
+        };
+    </script>
 </body>
 </html>
-
-
